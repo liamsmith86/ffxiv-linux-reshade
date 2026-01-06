@@ -5,6 +5,8 @@ from pathlib import Path
 import shutil
 import subprocess
 from typing import Optional
+import urllib.request
+import zipfile
 
 import vdf
 from xdg_base_dirs import xdg_data_home
@@ -163,7 +165,7 @@ def main():
 
     reshade_install_stdin = "\n".join(['i', str(info.ffxiv_path), 'y', 'n', '64', 'dxgi', 'y', ''])
 
-    print(f"Installing ReShade for FFXIV at {info.ffxiv_path}...")
+    print(f"Installing ReShade {reshade_install_env['RESHADE_VERSION']} with addon support for FFXIV at {info.ffxiv_path}...")
     result = subprocess.run(
         ['./reshade-linux.sh'],
         input=reshade_install_stdin,
@@ -287,6 +289,77 @@ def main():
         dest_file = info.ffxiv_path / f
         backup_file(dest_file)
         shutil.copy(GPOSINGWAY_DIR / f, dest_file)
+    
+    # Install optional shader packages (iMMERSE and METEOR) for ipsuShade compatibility
+    # Copy directly to game directory to avoid polluting the gposingway git repository
+    print("Installing optional shader packages (iMMERSE and METEOR)...")
+    optional_packages = [
+        {
+            'name': 'iMMERSE',
+            'url': 'https://github.com/martymcmodding/iMMERSE/archive/refs/heads/master.zip',
+            'extract_dir': 'iMMERSE-main'
+        },
+        {
+            'name': 'METEOR',
+            'url': 'https://github.com/martymcmodding/METEOR/archive/refs/heads/master.zip',
+            'extract_dir': 'METEOR-main'
+        }
+    ]
+    
+    for package in optional_packages:
+        package_dir = WORKDIR / package['name'].lower()
+        zip_file = package_dir / f"{package['name']}.zip"
+        
+        if not package_dir.exists():
+            package_dir.mkdir(parents=True, exist_ok=True)
+            print(f"  Downloading {package['name']}...")
+            
+            try:
+                urllib.request.urlretrieve(package['url'], zip_file)
+            except Exception as e:
+                print(f"  WARNING: Failed to download {package['name']}: {e}, skipping...")
+                continue
+            
+            # Extract the zip file
+            try:
+                with zipfile.ZipFile(zip_file, 'r') as zip_ref:
+                    zip_ref.extractall(package_dir)
+                print(f"  {package['name']} downloaded and extracted.")
+            except Exception as e:
+                print(f"  WARNING: Failed to extract {package['name']}: {e}")
+                continue
+        
+        # Copy shaders and textures to game directory (maintain directory structure)
+        extract_path = package_dir / package['extract_dir']
+        shaders_src = extract_path / 'Shaders'
+        textures_src = extract_path / 'Textures'
+        
+        shaders_dest = info.ffxiv_path / 'reshade-shaders' / 'Shaders'
+        textures_dest = info.ffxiv_path / 'reshade-shaders' / 'Textures'
+        
+        if shaders_src.exists():
+            for item in shaders_src.iterdir():
+                if item.is_file():
+                    # Copy individual shader files
+                    shutil.copy2(item, shaders_dest / item.name)
+                elif item.is_dir():
+                    # Copy subdirectories (like MartysMods with header files)
+                    dest_subdir = shaders_dest / item.name
+                    if dest_subdir.exists():
+                        shutil.rmtree(dest_subdir)
+                    shutil.copytree(item, dest_subdir)
+        
+        if textures_src.exists():
+            for item in textures_src.iterdir():
+                if item.is_file():
+                    shutil.copy2(item, textures_dest / item.name)
+                elif item.is_dir():
+                    dest_subdir = textures_dest / item.name
+                    if dest_subdir.exists():
+                        shutil.rmtree(dest_subdir)
+                    shutil.copytree(item, dest_subdir)
+    
+    print("Optional shader packages installed.")
     
     # Fix ReShade cache path and settings to prevent memory leaks on Linux
     print("Fixing ReShade configuration for Linux...")

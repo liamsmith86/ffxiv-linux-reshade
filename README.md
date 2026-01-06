@@ -88,6 +88,15 @@ WINEDLLOVERRIDES="d3dcompiler_43=n,b;d3dcompiler_47=n,b;dxgi=n,b" %command%
 3. Select a preset from the dropdown at the top
 4. Configure shader settings as desired
 
+### Known Shader Compilation Warnings
+
+Some shaders will show compilation errors in the ReShade overlay. **This is normal and expected:**
+
+- **AS_StageFX shaders** - Known incompatibility with ReShade 6.5.1
+- **Some iMMERSE/METEOR shaders** (MotionEstimation, Launchpad) - Optional advanced effects with syntax compatibility issues
+
+**These errors do not affect core functionality.** The main ipsuShade presets and most effects work perfectly despite these warnings. You can safely ignore the red error messages in the shader list.
+
 ## How It Works
 
 The installer performs the following steps:
@@ -96,9 +105,32 @@ The installer performs the following steps:
 2. Downloads and runs the ReShade installer for Linux
 3. Installs ReShade 6.5.1 with addon support (required for GPosingway compatibility)
 4. Installs native Windows d3dcompiler DLLs (required for shader compilation)
-5. Downloads the GPosingway shader repository
-6. Creates symlinks for shaders and presets
-7. Configures ReShade settings for optimal Linux performance
+5. Downloads the GPosingway shader repository (includes 587+ shaders from multiple collections)
+6. Installs optional shader packages (iMMERSE and METEOR by MartysMods)
+7. Creates symlinks for shaders and presets
+8. Configures ReShade settings for optimal Linux performance
+
+### Included Shader Collections
+
+The GPosingway repository includes shaders from:
+- Standard ReShade Effects
+- SweetFX
+- Legacy Effects
+- OtisFX
+- Depth3D
+- FXShaders
+- Shaders by brussell
+- Fubax Shaders
+- qUINT
+- PD80
+- AstrayFX
+- And many more (587+ total shaders)
+
+Additionally, the installer automatically downloads and installs:
+- **iMMERSE** - Advanced shader package by MartysMods
+- **METEOR** - Additional effects package by MartysMods
+
+These optional packages are required for full ipsuShade preset compatibility.
 
 ## Working Directory
 
