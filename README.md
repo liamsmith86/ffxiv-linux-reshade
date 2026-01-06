@@ -94,10 +94,11 @@ The installer performs the following steps:
 
 1. Detects your FFXIV installation and Wine prefix
 2. Downloads and runs the ReShade installer for Linux
-3. Installs native Windows d3dcompiler DLLs (required for shader compilation)
-4. Downloads the GPosingway shader repository
-5. Creates symlinks for shaders and presets
-6. Configures ReShade settings for optimal Linux performance
+3. Installs ReShade 6.5.1 with addon support (required for GPosingway compatibility)
+4. Installs native Windows d3dcompiler DLLs (required for shader compilation)
+5. Downloads the GPosingway shader repository
+6. Creates symlinks for shaders and presets
+7. Configures ReShade settings for optimal Linux performance
 
 ## Working Directory
 

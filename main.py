@@ -134,9 +134,11 @@ def main():
     RESHADE_INSTALLER_DIR.mkdir(exist_ok=True)
     RESHADE_DATA_DIR = WORKDIR / 'reshade'
 
+    # Pin to ReShade 6.5.1 with addon support (required for GPosingway compatibility)
     reshade_install_env = {
         'MAIN_PATH': str(RESHADE_DATA_DIR),
         'SHADER_REPOS': '',
+        'RESHADE_VERSION': '6.5.1',
         'RESHADE_ADDON_SUPPORT': '1'
     }
 
