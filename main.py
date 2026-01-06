@@ -51,7 +51,9 @@ class XLCoreInfo:
             launcher_ini_path = xlcore_path / 'launcher.ini'
             launcher_config = ConfigParser(allow_unnamed_section=True, strict=False)
             launcher_config.read(launcher_ini_path)
-            self.ffxiv_path = Path(launcher_config[UNNAMED_SECTION]['GamePath'])
+            # XLCore's GamePath points to base directory, need to append /game
+            game_base_path = Path(launcher_config[UNNAMED_SECTION]['GamePath'])
+            self.ffxiv_path = game_base_path / 'game'
             self.wine_prefix = xlcore_path / 'wineprefix'
             # XLCore uses protonprefix when "Managed Proton" is selected
             self.proton_prefix = xlcore_path / 'protonprefix'
