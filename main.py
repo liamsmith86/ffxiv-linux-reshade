@@ -272,17 +272,31 @@ def main():
         )
         print("GPosingway updated.")
 
-    for name in ['reshade-presets', 'reshade-shaders']:
-        link   = info.ffxiv_path / name
-        target = GPOSINGWAY_DIR / name
-
-        if link.exists() or link.is_symlink():
-            if link.is_symlink() or link.is_file():
-                link.unlink()
-            else:
-                shutil.rmtree(link)
-
-        link.symlink_to(target, target_is_directory=True)
+    # Symlink presets directory (read-only)
+    presets_link = info.ffxiv_path / 'reshade-presets'
+    presets_target = GPOSINGWAY_DIR / 'reshade-presets'
+    
+    if presets_link.exists() or presets_link.is_symlink():
+        if presets_link.is_symlink() or presets_link.is_file():
+            presets_link.unlink()
+        else:
+            shutil.rmtree(presets_link)
+    
+    presets_link.symlink_to(presets_target, target_is_directory=True)
+    
+    # Copy shaders directory locally (so we can add iMMERSE/METEOR shaders without polluting gposingway git repo)
+    shaders_local = info.ffxiv_path / 'reshade-shaders'
+    shaders_gposingway = GPOSINGWAY_DIR / 'reshade-shaders'
+    
+    if shaders_local.exists() or shaders_local.is_symlink():
+        if shaders_local.is_symlink() or shaders_local.is_file():
+            shaders_local.unlink()
+        else:
+            shutil.rmtree(shaders_local)
+    
+    # Copy gposingway shaders to local directory
+    print("Copying GPosingway shaders to game directory...")
+    shutil.copytree(shaders_gposingway, shaders_local, dirs_exist_ok=True)
 
     print("Installing GPosingway configuration files...")
     for f in ['ReShade.ini', 'ReShadePreset.ini']:
@@ -309,8 +323,12 @@ def main():
     for package in optional_packages:
         package_dir = WORKDIR / package['name'].lower()
         zip_file = package_dir / f"{package['name']}.zip"
+        extract_path = package_dir / package['extract_dir']
         
-        if not package_dir.exists():
+        # Check if we need to download (directory doesn't exist or extraction incomplete)
+        needs_download = not extract_path.exists()
+        
+        if needs_download:
             package_dir.mkdir(parents=True, exist_ok=True)
             print(f"  Downloading {package['name']}...")
             
@@ -326,11 +344,17 @@ def main():
                     zip_ref.extractall(package_dir)
                 print(f"  {package['name']} downloaded and extracted.")
             except Exception as e:
-                print(f"  WARNING: Failed to extract {package['name']}: {e}")
+                print(f"  WARNING: Failed to extract {package['name']}: {e}, skipping...")
                 continue
+        else:
+            print(f"  {package['name']} already downloaded, using cached version.")
+        
+        # Validate extraction was successful before copying
+        if not extract_path.exists():
+            print(f"  WARNING: {package['name']} extraction path not found, skipping...")
+            continue
         
         # Copy shaders and textures to game directory (maintain directory structure)
-        extract_path = package_dir / package['extract_dir']
         shaders_src = extract_path / 'Shaders'
         textures_src = extract_path / 'Textures'
         
@@ -391,7 +415,7 @@ def main():
         if 'INPUT' not in config:
             config['INPUT'] = {}
         
-        # Set absolute paths for shaders (required for Wine to resolve symlinks)
+        # Set absolute paths for shaders (required for Wine path resolution)
         config['GENERAL']['EffectSearchPaths'] = f'{game_path_wine}\\reshade-shaders\\Shaders\\**'
         config['GENERAL']['TextureSearchPaths'] = f'{game_path_wine}\\reshade-shaders\\Textures\\**'
         

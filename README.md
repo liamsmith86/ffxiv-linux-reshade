@@ -98,7 +98,7 @@ The installer performs the following steps:
 4. Installs native Windows d3dcompiler DLLs (required for shader compilation)
 5. Downloads the GPosingway shader repository (includes 587+ shaders from multiple collections)
 6. Installs optional shader packages (iMMERSE and METEOR by MartysMods)
-7. Creates symlinks for shaders and presets
+7. Copies shaders to game directory and creates symlink for presets
 8. Configures ReShade settings for optimal Linux performance
 
 ## Working Directory
