@@ -4,7 +4,25 @@ An automated installer for GPosingway and Reshade in FFXIV on Linux.
 
 ## Description
 
-This tool automatically installs ReShade and GPosingway presets for Final Fantasy XIV on Linux. It handles the installation of ReShade, native Windows d3dcompiler DLLs, and links the GPosingway shader repository to your FFXIV installation. This project was tested on CachyOS but may work on other Linux distributions. 
+This tool automatically installs ReShade, GPosingway presets, and ipsuShade dependencies for Final Fantasy XIV on Linux. It is intended to be a one-click solution to deploy a complete ReShade experience on FFXIV on Linux.
+
+It handles the installation of ReShade, native Windows d3dcompiler DLLs, and links the GPosingway shader repository to your FFXIV installation. This project was tested on CachyOS but may work on other Linux distributions. 
+
+The installer performs the following steps:
+
+1. Detects your FFXIV installation and Wine prefix
+2. Downloads and runs the ReShade installer for Linux
+3. Installs ReShade 6.5.1 with addon support
+4. Installs native Windows d3dcompiler DLLs from Microsoft
+5. Installs ReshadeEffectShaderToggler addon to prevent dark game/UI exclusion issues
+6. Downloads the GPosingway shader repository (includes shaders from multiple collections)
+7. Installs shader packages for ipsuShade (iMMERSE and METEOR by MartysMods)
+8. Copies shaders to game directory and creates symlink for presets
+9. Configures ReShade settings:
+   - Disables Performance Mode (otherwise some presets fail to compile on ipsuSHade)
+   - Sets default preset to ipsusuQuestingLite - Vanilla
+   - Configures shader and texture search paths
+   - Sets cache directory
 
 ## Requirements
 
@@ -84,23 +102,9 @@ WINEDLLOVERRIDES="d3dcompiler_43=n,b;d3dcompiler_47=n,b;dxgi=n,b" %command%
 ## Usage
 
 1. Launch FFXIV
-2. Press `Shift+F2` to open the ReShade menu
-3. Select a preset from the dropdown at the top
-4. Configure shader settings as desired
-
-## How It Works
-
-The installer performs the following steps:
-
-1. Detects your FFXIV installation and Wine prefix
-2. Downloads and runs the ReShade installer for Linux
-3. Installs ReShade 6.5.1 with addon support (required for GPosingway compatibility)
-4. Installs native Windows d3dcompiler DLLs (required for shader compilation)
-5. Installs updated REST (ReshadeEffectShaderToggler) addon to prevent dark game/UI exclusion issues
-6. Downloads the GPosingway shader repository (includes 587+ shaders from multiple collections)
-7. Installs optional shader packages (iMMERSE and METEOR by MartysMods)
-8. Copies shaders to game directory and creates symlink for presets
-9. Configures ReShade settings for optimal Linux performance
+2. The default preset will auto-load (ipsusuQuestingLite - Vanilla)
+3. Press `Shift+F2` to open the ReShade menu and switch presets if desired
+4. All ipsuShade presets are available in the dropdown
 
 ## Working Directory
 
@@ -118,4 +122,7 @@ See LICENSE file for details.
 
 Initially based off of https://github.com/Kekemui/gposingway-linux
 
-This project also uses reshade-steam-proton https://github.com/kevinlekiller/reshade-steam-proton and gposingway https://github.com/gposingway/gposingway
+This project also uses:
+- reshade-steam-proton https://github.com/kevinlekiller/reshade-steam-proton 
+- gposingway https://github.com/gposingway/gposingway
+- REST https://github.com/4lex4nder/ReshadeEffectShaderToggler

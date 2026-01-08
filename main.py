@@ -475,7 +475,11 @@ def main():
         
         # Performance settings to prevent memory issues
         config['GENERAL']['NoReloadOnInit'] = '1'
-        config['GENERAL']['PerformanceMode'] = '1'
+        config['GENERAL']['PerformanceMode'] = '0'  # Some ipsuShade shaders fail with performance mode enabled
+        
+        # Set default preset to auto-load ipsuShade Questing Lite preset
+        preset_path = f'{game_path_wine}\\reshade-presets\\ipsuShade\\g1. ipsusuLite (Max FPS)\\p2. questingLite (Max Quality for FPS)\\ipsusuQuestingLite - Vanilla.ini'
+        config['GENERAL']['CurrentPresetPath'] = preset_path
         
         # Set ReShade overlay hotkey to Shift+F2 (F2=113, Shift modifier=1)
         config['INPUT']['KeyOverlay'] = '113,0,1,0'
@@ -483,6 +487,8 @@ def main():
         with open(reshade_ini, 'w') as f:
             config.write(f)
         print("ReShade configuration updated.")
+        print("  - Performance Mode: Disabled")
+        print("  - Default preset: ipsusuQuestingLite - Vanilla")
 
     print("All done!")
     print()
@@ -504,14 +510,7 @@ def main():
     else:
         print("   Set the following environment variable when launching FFXIV:")
         print('   WINEDLLOVERRIDES="d3dcompiler_43=n,b;d3dcompiler_47=n,b;dxgi=n,b"')
-    
-    print()
-    print("2. Using GPosingway:")
-    print("   - Press Shift+F2 in-game to open ReShade menu")
-    print("   - Select a preset from the dropdown at the top")
-    print("   - Some shaders (AS_StageFX) may show compile errors - these are expected due to incompatibility with newer ReShade version")
-    print("   - Core presets like ipsuShade should work fine")
-    print()
+
     print("=" * 80)
 
 if __name__ == '__main__':
