@@ -96,10 +96,11 @@ The installer performs the following steps:
 2. Downloads and runs the ReShade installer for Linux
 3. Installs ReShade 6.5.1 with addon support (required for GPosingway compatibility)
 4. Installs native Windows d3dcompiler DLLs (required for shader compilation)
-5. Downloads the GPosingway shader repository (includes 587+ shaders from multiple collections)
-6. Installs optional shader packages (iMMERSE and METEOR by MartysMods)
-7. Copies shaders to game directory and creates symlink for presets
-8. Configures ReShade settings for optimal Linux performance
+5. Installs updated REST (ReshadeEffectShaderToggler) addon to prevent dark game/UI exclusion issues
+6. Downloads the GPosingway shader repository (includes 587+ shaders from multiple collections)
+7. Installs optional shader packages (iMMERSE and METEOR by MartysMods)
+8. Copies shaders to game directory and creates symlink for presets
+9. Configures ReShade settings for optimal Linux performance
 
 ## Working Directory
 

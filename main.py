@@ -243,6 +243,57 @@ def main():
             shutil.copy(d3dcompiler_47, proton_sys32 / 'd3dcompiler_43.dll')
             print("d3dcompiler DLLs installed to Proton prefix.")
 
+    # Install updated REST (ReshadeEffectShaderToggler) addon to fix dark game/UI issues
+    print("Installing updated REST (ReshadeEffectShaderToggler) addon...")
+    
+    REST_DIR = WORKDIR / 'rest'
+    REST_ZIP = REST_DIR / 'rest.zip'
+    REST_URL = 'https://github.com/4lex4nder/ReshadeEffectShaderToggler/releases/download/v1.3.23.633/release.zip'
+    REST_INI_URL = 'https://raw.githubusercontent.com/4lex4nder/ReshadeEffectShaderToggler-FFXIV/refs/heads/main/ReshadeEffectShaderToggler.ini'
+    
+    REST_DIR.mkdir(exist_ok=True)
+    
+    # Download REST addon if not already downloaded
+    if not REST_ZIP.exists():
+        try:
+            print("  Downloading REST addon...")
+            urllib.request.urlretrieve(REST_URL, REST_ZIP)
+            
+            # Extract the addon
+            with zipfile.ZipFile(REST_ZIP, 'r') as zip_ref:
+                zip_ref.extractall(REST_DIR)
+            print("  REST addon downloaded and extracted.")
+        except Exception as e:
+            print(f"  WARNING: Failed to download REST addon: {e}")
+            print("  You may need to manually install it from:")
+            print(f"  {REST_URL}")
+    else:
+        print("  REST addon already downloaded.")
+    
+    # Copy REST addon to game directory
+    rest_addon_src = REST_DIR / 'ReshadeEffectShaderToggler.addon64'
+    rest_addon_dest = info.ffxiv_path / 'ReshadeEffectShaderToggler.addon64'
+    
+    if rest_addon_src.exists():
+        backup_file(rest_addon_dest)
+        shutil.copy2(rest_addon_src, rest_addon_dest)
+        print(f"  REST addon installed to {rest_addon_dest}")
+    else:
+        print("  WARNING: REST addon file not found after extraction.")
+    
+    # Download and install FFXIV-specific REST config
+    rest_ini_dest = info.ffxiv_path / 'ReshadeEffectShaderToggler.ini'
+    try:
+        print("  Downloading FFXIV-specific REST configuration...")
+        urllib.request.urlretrieve(REST_INI_URL, rest_ini_dest)
+        print(f"  REST configuration installed to {rest_ini_dest}")
+    except Exception as e:
+        print(f"  WARNING: Failed to download REST configuration: {e}")
+        print("  You may need to manually install it from:")
+        print(f"  {REST_INI_URL}")
+    
+    print("REST addon installation complete.")
+
     # Remove baseline shaders / ReShade config
 
     print("Cleaning out baseline shaders and configuration")
